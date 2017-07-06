@@ -43,11 +43,20 @@ def post_scraper(num_posts_to_collect, start_num, sub_to_collect):
             else:
                 page_link = ""
             page_data = get_reddit_data(sub_to_collect, page_link)
+            if page_data == None:
+                logging.warning("page data is None, sleeping to see if internet connection comes back")
+                time.sleep(500)
+                page_data = get_reddit_data(sub_to_collect, page_link)
+                if page_data == None:
+                    logging.warning("Sleep did not work, killing process.")
+                    go = False
+                    print "Internet Connection Issue"
+                    break
             out.write(page_data+"\n")
             count = start_count+25
             p_num = 1
             while count <= num_posts_to_collect:
-                time.sleep(2)
+                time.sleep(3)
                 page_link = "?count="+str(count)
                 page_data = get_reddit_data(sub_to_collect, page_link)
                 try:
@@ -60,7 +69,7 @@ def post_scraper(num_posts_to_collect, start_num, sub_to_collect):
                     p_num+=1
                 except:
                     logging.warning("Data returned not jsonable or no data in json object :(")
-                    time.sleep(3)
+                    time.sleep(500)
                     off_start = True
                     start_count = count
                     logging.info("Restarting collection")
