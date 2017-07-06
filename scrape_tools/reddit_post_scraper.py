@@ -23,7 +23,7 @@ def get_reddit_data(sub, page_link):
 
 
 
-def post_scraper(num_posts_to_collect, sub_to_collect):
+def post_scraper(num_posts_to_collect, start_num, sub_to_collect):
     warnings.filterwarnings("ignore")
     outfile = sub_to_collect+"_reddit_posts.json"
     FORMAT = "%(asctime)s %(levelname)s %(module)s %(lineno)d %(funcName)s:: %(message)s"
@@ -34,7 +34,7 @@ def post_scraper(num_posts_to_collect, sub_to_collect):
     logging.info("------> Writing Data out to "+outfile)
     
     off_start = False
-    start_count = 0
+    start_count = start_num
     go = True
     while go:
         with open(outfile, "a") as out:
