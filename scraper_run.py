@@ -10,6 +10,6 @@ with open("subs_to_collect.txt") as subs:
     subs_to_collect = [l.strip() for l in subs]
 
 for sub_to_collect in subs_to_collect:
-    post_scraper(number_posts_to_collect, sub_to_collect)
+    post_scraper.post_scraper(number_posts_to_collect, sub_to_collect)
     post_file = sub_to_collect+"_reddit_posts.json"
-    comment_scraper(sub_to_collect, post_file)
+    comment_scraper.comment_scraper(sub_to_collect, post_file)
