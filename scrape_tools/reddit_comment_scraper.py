@@ -9,18 +9,11 @@ import warnings
 import logging
 import json
 
+import praw
 
-def get_reddit_data(page_link):
-    url_base = "https://www.reddit.com"
-    try:
-        http = urllib3.PoolManager()
-        r = http.request('GET', url_base+page_link)
-        if len(r.data) == 0:
-            logging.warning("Data came back with 0 length")
-            return None
-        return r.data.decode('utf-8').strip()
-    except:
-        logging.warning("Something General went wrong with scrape, Maybe check your internet connection")
+reddit = praw.Reddit(user_agent='Comment Extraction (by /u/BDHResearch)',
+                     client_id='4iq6UiKGMOE35w', client_secret="_YZhBJI7_2wjqTSHRZSBtOOY1QY",
+                     username='BDHResearch', password='Bdbomb777')
 
 def get_posts_with_id_collected():
     with open("post_links_done.txt") as done:
@@ -32,7 +25,7 @@ def comment_scraper(sub, post_file):
     logging.basicConfig(filename=sub+'_comment.log', filemode='a', level=logging.DEBUG, format=FORMAT)
     warnings.filterwarnings("ignore")
     
-    outfile = sub+'_reddit_comments.json'
+    outfile = sub+'_postandcomment_data.json'
 
     logging.info("------> Starting comment Collection for "+post_file)
     links_collected = get_posts_with_id_collected()
@@ -46,13 +39,20 @@ def comment_scraper(sub, post_file):
                         continue
                     with open("post_links_done.txt", "a") as store:
                         store.write(str(permalink)+"\n")
-                    page_link = permalink[:-1]+".json"
-                    page_data = get_reddit_data(page_link)
-                    if page_data == None:
-                        logging.warning("page data is None, sleeping..")
-                        time.sleep(300)
-                        page_data = get_reddit_data(page_link)
-                        if page_data == None:
-                            logging.warning("Sleep did not work, killing process.")   
-                    out.write(page_data+"\n")
-        
+                    page_link = "https://www.reddit.com"+permalink
+
+                    submission = reddit.submission(url=page_link)
+                    
+                    #submission data extraction
+                    data_dict = {}
+                    sub_data = {"id": "t3_"+str(submission.id), "score": submission.score, "numcmts": submission.num_comments,"title":submission.title , "selftext":submission.selftext, "url":submission.url, "author":str(submission.author)} 
+                    data_dict['submission'] = sub_data
+                    
+                    #comment data extraction
+                    cmts_data = {}
+                    submission.comments.replace_more(limit=0)
+                    for comment in submission.comments.list():
+                        cmt_data = {"body":comment.body,"score":comment.score,"depth":comment.depth, "author":str(comment.author), "parent":comment.parent_id}
+                        cmts_data["t1_"+str(comment.id)] = cmt_data
+                    data_dict["comments"] = cmts_data
+                    out.write(json.dumps(data_dict)+"\n")
