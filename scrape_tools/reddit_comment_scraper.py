@@ -3,6 +3,7 @@ import sys
 import unicodedata
 import requests
 import urllib3
+import urllib2
 from lxml import html
 import time
 import warnings
@@ -14,6 +15,13 @@ import praw
 reddit = praw.Reddit(user_agent='Comment Extraction (by /u/BDHResearch)',
                      client_id='4iq6UiKGMOE35w', client_secret="_YZhBJI7_2wjqTSHRZSBtOOY1QY",
                      username='BDHResearch', password='Bdbomb777')
+
+def internet_on():
+    try:
+        urllib2.urlopen('http://www.reddit.com', timeout=1)
+        return True
+    except urllib2.URLError as err: 
+        return False
 
 def get_posts_with_id_collected():
     with open("post_links_done.txt") as done:
@@ -41,8 +49,13 @@ def comment_scraper(sub, post_file):
                         store.write(str(permalink)+"\n")
                     page_link = "https://www.reddit.com"+permalink
 
+                    while internet_on() == False:
+                        print "Internet connection issue, sleeping for 300 seconds..."
+                        logging.warning("Internet connection issue, sleeping for 300 seconds...")
+                        time.sleep(300)
+                        print "Waking up and Trying again..."
+
                     submission = reddit.submission(url=page_link)
-                    
                     #submission data extraction
                     data_dict = {}
                     sub_data = {"id": "t3_"+str(submission.id), "score": submission.score, "numcmts": submission.num_comments,"title":submission.title , "selftext":submission.selftext, "url":submission.url, "author":str(submission.author)} 
