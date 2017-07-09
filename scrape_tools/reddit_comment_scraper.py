@@ -18,7 +18,7 @@ reddit = praw.Reddit(user_agent='Comment Extraction (by /u/BDHResearch)',
 
 def internet_on():
     try:
-        urllib2.urlopen('http://www.reddit.com', timeout=1)
+        urllib2.urlopen('http://www.google.com', timeout=20)
         return True
     except urllib2.URLError as err: 
         return False
@@ -49,6 +49,7 @@ def comment_scraper(sub, post_file):
                         store.write(str(permalink)+"\n")
                     page_link = "https://www.reddit.com"+permalink
 
+                    time.sleep(2)
                     while internet_on() == False:
                         print "Internet connection issue, sleeping for 300 seconds..."
                         logging.warning("Internet connection issue, sleeping for 300 seconds...")
