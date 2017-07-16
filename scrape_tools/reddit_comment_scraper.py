@@ -16,6 +16,10 @@ reddit = praw.Reddit(user_agent='Comment Extraction (by /u/BDHResearch)',
                      client_id='4iq6UiKGMOE35w', client_secret="_YZhBJI7_2wjqTSHRZSBtOOY1QY",
                      username='BDHResearch', password='Bdbomb777')
 
+def fix(text):
+    text = text.decode("ascii", "ignore")
+    return text
+
 def internet_on():
     try:
         urllib2.urlopen('http://www.google.com', timeout=20)
@@ -46,27 +50,43 @@ def comment_scraper(sub, post_file):
                     if permalink in links_collected:
                         continue
                     with open("post_links_done.txt", "a") as store:
-                        store.write(str(permalink)+"\n")
+                        store.write(str(fix(permalink))+"\n")
                     page_link = "https://www.reddit.com"+permalink
 
-                    time.sleep(2)
+                    #check internet connection before start
                     while internet_on() == False:
-                        print "Internet connection issue, sleeping for 300 seconds..."
-                        logging.warning("Internet connection issue, sleeping for 300 seconds...")
-                        time.sleep(300)
+                        print "Internet connection issue, sleeping for 60 seconds..."
+                        logging.warning("Internet connection issue, sleeping for 60 seconds...")
+                        time.sleep(60)
                         print "Waking up and Trying again..."
+                        
+                    tryagain = True
+                    while tryagain:
+                        try:
+                            #submission data extraction
+                            submission = reddit.submission(url=page_link)
+                            data_dict = {}
+                            sub_data = {"id": "t3_"+str(submission.id), "score": submission.score, "numcmts": submission.num_comments,"title":submission.title , "selftext":submission.selftext, "url":submission.url, "author":str(submission.author)} 
+                            data_dict['submission'] = sub_data
+                            
+                            #comment data extraction
+                            cmts_data = {}
+                            submission.comments.replace_more(limit=0)
+                            for comment in submission.comments.list():
+                                cmt_data = {"body":comment.body,"score":comment.score,"depth":comment.depth, "author":str(comment.author), "parent":comment.parent_id}
+                                cmts_data["t1_"+str(comment.id)] = cmt_data
+                            data_dict["comments"] = cmts_data
 
-                    submission = reddit.submission(url=page_link)
-                    #submission data extraction
-                    data_dict = {}
-                    sub_data = {"id": "t3_"+str(submission.id), "score": submission.score, "numcmts": submission.num_comments,"title":submission.title , "selftext":submission.selftext, "url":submission.url, "author":str(submission.author)} 
-                    data_dict['submission'] = sub_data
-                    
-                    #comment data extraction
-                    cmts_data = {}
-                    submission.comments.replace_more(limit=0)
-                    for comment in submission.comments.list():
-                        cmt_data = {"body":comment.body,"score":comment.score,"depth":comment.depth, "author":str(comment.author), "parent":comment.parent_id}
-                        cmts_data["t1_"+str(comment.id)] = cmt_data
-                    data_dict["comments"] = cmts_data
-                    out.write(json.dumps(data_dict)+"\n")
+                            #output to file
+                            out.write(json.dumps(data_dict)+"\n")
+
+                            #set tryagain flag
+                            tryagain = False
+                        except KeyboardInterrupt:
+                            logger.info('Termination received. Goodbye!')
+                            tryagain = False
+                        except PrawcoreException:
+                            logger.exception('run loop')
+                            time.sleep(10)
+                            tryagain = True
+                                
