@@ -83,10 +83,10 @@ def comment_scraper(sub, post_file):
                             #set tryagain flag
                             tryagain = False
                         except KeyboardInterrupt:
-                            logger.info('Termination received. Goodbye!')
+                            logging.info('Termination received. Goodbye!')
                             tryagain = False
                         except:
-                            logger.exception('run loop')
+                            logging.exception('run loop')
                             time.sleep(10)
                             tryagain = True
                                 
