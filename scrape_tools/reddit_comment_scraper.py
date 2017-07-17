@@ -85,7 +85,7 @@ def comment_scraper(sub, post_file):
                         except KeyboardInterrupt:
                             logger.info('Termination received. Goodbye!')
                             tryagain = False
-                        except PrawcoreException:
+                        except:
                             logger.exception('run loop')
                             time.sleep(10)
                             tryagain = True
