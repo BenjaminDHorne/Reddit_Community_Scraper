@@ -1,5 +1,5 @@
 c=0
-with open("Democrats_postandcomment_data.json") as data:
+with open("sub_postandcomment_data.json") as data:
     for line in data:
         c+=1
 print "Comment Trees Collected", c
