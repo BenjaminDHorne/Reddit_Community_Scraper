@@ -3,18 +3,13 @@
 import sys
 import os
 
-import scrape_tools.reddit_post_scraper as post_scraper
-import scrape_tools.reddit_comment_scraper as comment_scraper
+import scrape_tools.reddit_community_scraper as scraper
 
-number_posts_to_collect = 150000
-start_num = 0
+start_date = "1492236000" #April 15th
+end_date = "1500098400" #July 15th
 with open("subs_to_collect.txt") as subs:
     subs_to_collect = [l.strip() for l in subs]
 
-comment_scraper.comment_scraper("uncensorednews", "uncensorednews_reddit_posts.json")
-
-##for sub_to_collect in subs_to_collect:
-##    post_scraper.post_scraper(number_posts_to_collect, start_num, sub_to_collect)
-##    post_file = sub_to_collect+"_reddit_posts.json"
-##    comment_scraper.comment_scraper(sub_to_collect, post_file)
-##    start_num = 0
+for sub in subs_to_collect:
+    outfile = sub+"_postdata_"+start_date+"-"+end_date+".json"
+    scraper.scraper(sub, (start_date, end_date), outfile, True, False)
