@@ -31,10 +31,14 @@ def get_posts_with_id_collected():
     with open("post_links_done.txt") as done:
         links_collected = [link for link in done]
     return links_collected
+	
+def get_date(submission):
+    time = submission.created
+    return time
 
 def scraper(sub, date_range, outfile, collect_posts=True, collect_cmts=True):
     FORMAT = "%(asctime)s %(levelname)s %(module)s %(lineno)d %(funcName)s:: %(message)s"
-    logging.basicConfig(filename=sub+'.log', filemode='a', level=logging.DEBUG, format=FORMAT)
+    logging.basicConfig(filename='scraper.log', filemode='a', level=logging.DEBUG, format=FORMAT)
     warnings.filterwarnings("ignore")
 
     #check internet connection before start
@@ -53,7 +57,7 @@ def scraper(sub, date_range, outfile, collect_posts=True, collect_cmts=True):
                     if collect_posts:
                         #submission data extraction
                         data_dict = {}
-                        sub_data = {"id": "t3_"+str(submission.id), "score": submission.score, "numcmts": submission.num_comments,"title":submission.title , "selftext":submission.selftext, "url":submission.url, "author":str(submission.author), "is_self":submission.is_self} 
+                        sub_data = {"id": "t3_"+str(submission.id), "score": submission.score, "numcmts": submission.num_comments,"title":submission.title , "selftext":submission.selftext, "url":submission.url, "author":str(submission.author), "is_self":submission.is_self, "time":get_date(submission)} 
                         data_dict['submission'] = sub_data
 
                     if collect_cmts:
