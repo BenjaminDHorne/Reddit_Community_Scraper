@@ -12,7 +12,7 @@ import json
 
 import praw
 
-reddit = praw.Reddit(user_agent='Post and Comment Extraction)',
+reddit = praw.Reddit(user_agent='Post and Comment Extraction',
                      client_id='', client_secret="",
                      username='', password='') #insert client information here
 
