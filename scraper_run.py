@@ -12,4 +12,4 @@ with open("subs_to_collect.txt") as subs:
 
 for sub in subs_to_collect:
     outfile = sub+"_postdata_"+start_date+"-"+end_date+".json"
-    scraper.scraper(sub, (start_date, end_date), outfile, True, False)
+    scraper.scraper(sub, (start_date, end_date), outfile, True, False) # First boolean param is for collecting posts, second boolean param is for collecting comments
