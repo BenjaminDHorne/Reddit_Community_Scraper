@@ -8,6 +8,7 @@ To use the scraper:
 3. To collect both posts and comments, use 'scraper.scraper(sub, (start_date, end_date), outfile, True, True)' in scraper_run.py. To collect only posts use 'scraper.scraper(sub, (start_date, end_date), outfile, True, False)'.
 4. In scrape_tools/reddit_community_scraper.py provide API client information. This can be done from any reddit account. 
 
+----------------------------------------------------------------------------------------------------------------------------------------
 
 Copyright (c) 2017, Benjamin D. Horne
 
