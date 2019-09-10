@@ -1,4 +1,7 @@
 # Reddit_Community_Scraper
+
+NOTE: This scraper is out-of-date, may not work with new Reddit API. 
+
 General Subreddit Scraper that first scrapes posts, then scrapes comments under those posts. 
 
 To use the scraper:
